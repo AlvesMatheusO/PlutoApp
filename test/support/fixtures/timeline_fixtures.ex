@@ -19,4 +19,20 @@ defmodule Pluto.TimelineFixtures do
 
     revenue
   end
+
+  @doc """
+  Generate a expense.
+  """
+  def expense_fixture(attrs \\ %{}) do
+    {:ok, expense} =
+      attrs
+      |> Enum.into(%{
+        description: "some description",
+        price: 42,
+        title: "some title"
+      })
+      |> Pluto.Timeline.create_expense()
+
+    expense
+  end
 end

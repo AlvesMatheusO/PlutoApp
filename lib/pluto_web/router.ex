@@ -29,6 +29,12 @@ defmodule PlutoWeb.Router do
     live "/revenues/:id", RevenueLive.Show, :show
     live "/revenues/:id/show/edit", RevenueLive.Show, :edit
 
+    live "/expenses", ExpenseLive.Index, :index
+    live "/expenses/new", ExpenseLive.Index, :new
+    live "/expenses/:id/edit", ExpenseLive.Index, :edit
+
+    live "/expenses/:id", ExpenseLive.Show, :show
+    live "/expenses/:id/show/edit", ExpenseLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.
