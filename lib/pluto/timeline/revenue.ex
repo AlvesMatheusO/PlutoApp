@@ -3,9 +3,10 @@ defmodule Pluto.Timeline.Revenue do
   import Ecto.Changeset
 
   schema "revenues" do
-    field :description, :string
     field :title, :string
+    field :description, :string
     field :price, :integer
+    field :date_added, :date
 
     timestamps(type: :utc_datetime)
   end
@@ -13,7 +14,7 @@ defmodule Pluto.Timeline.Revenue do
   @doc false
   def changeset(revenue, attrs) do
     revenue
-    |> cast(attrs, [:title, :description, :price])
-    |> validate_required([:title, :description, :price])
+    |> cast(attrs, [:title, :description, :price, :date_added])
+    |> validate_required([:title, :price, :date_added])
   end
 end

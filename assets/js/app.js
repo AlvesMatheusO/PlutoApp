@@ -13,23 +13,81 @@
 // them using a path starting with the package name:
 //
 //     import "some-package"
-//
 
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"
 // Establish Phoenix Socket and LiveView configuration.
-import {Socket} from "phoenix"
-import {LiveSocket} from "phoenix_live_view"
+import { Socket } from "phoenix"
+import { LiveSocket } from "phoenix_live_view"
 import topbar from "../vendor/topbar"
+import Chart from "chart.js/auto"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+
+// Definindo os hooks
+let Hooks = {};
+
+// Hook para o gráfico de receitas
+Hooks.RevenueChartHook = {
+  mounted() {
+    // Obtendo o valor do número de receitas por mês a partir do atributo `data-revenues-by-month`
+    const revenuesByMonth = JSON.parse(this.el.dataset.revenuesByMonth);
+
+    // Converter os números dos meses para os nomes dos meses
+    const monthNames = [
+      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ];
+
+    const labels = Object.keys(revenuesByMonth).map(month => monthNames[month - 1]);
+    const data = Object.values(revenuesByMonth);
+
+    // Criando o gráfico de receitas por mês
+    var ctx = document.getElementById('revenuesChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Total de Receitas por Mês',
+          data: data,
+          fill: false,
+          borderColor: 'rgba(54, 162, 235, 1)',
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Meses'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Total de Receitas'
+            },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+};
+
+
+// Criando a instância do LiveSocket e adicionando os hooks
 let liveSocket = new LiveSocket("/live", Socket, {
+  hooks: Hooks,
   longPollFallbackMs: 2500,
-  params: {_csrf_token: csrfToken}
+  params: { _csrf_token: csrfToken }
 })
 
 // Show progress bar on live navigation and form submits
-topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
+topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" })
 window.addEventListener("phx:page-loading-start", _info => topbar.show(300))
 window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
 
@@ -41,4 +99,3 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
-

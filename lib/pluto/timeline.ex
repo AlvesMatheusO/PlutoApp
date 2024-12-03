@@ -21,6 +21,19 @@ defmodule Pluto.Timeline do
     Repo.all(Revenue)
   end
 
+  def count_revenues do
+    Repo.aggregate(from(r in Revenue), :count, :id)
+  end
+
+  def count_revenues_by_month do
+    from(r in Revenue,
+      select: {fragment("DATE_PART('month', ?)", r.date_added), sum(r.price)},
+      group_by: fragment("DATE_PART('month', ?)", r.date_added)
+    )
+    |> Repo.all()
+    |> Enum.into(%{})
+  end
+
   @doc """
   Gets a single revenue.
 
@@ -134,7 +147,7 @@ defmodule Pluto.Timeline do
   def get_expense!(id), do: Repo.get!(Expense, id)
 
   @doc """
-  Creates a expense.
+  Creates an expense.
 
   ## Examples
 
@@ -152,7 +165,7 @@ defmodule Pluto.Timeline do
   end
 
   @doc """
-  Updates a expense.
+  Updates an expense.
 
   ## Examples
 
@@ -170,7 +183,7 @@ defmodule Pluto.Timeline do
   end
 
   @doc """
-  Deletes a expense.
+  Deletes an expense.
 
   ## Examples
 

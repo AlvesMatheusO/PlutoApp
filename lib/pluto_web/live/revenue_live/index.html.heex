@@ -15,6 +15,7 @@
   <:col :let={{_id, revenue}} label="Title"><%= revenue.title %></:col>
   <:col :let={{_id, revenue}} label="Description"><%= revenue.description %></:col>
   <:col :let={{_id, revenue}} label="Price"><%= revenue.price %></:col>
+  <:col :let={{_id, revenue}} label="Date Added"><%= revenue.date_added %></:col> <!-- Aqui adicionamos a coluna da data -->
   <:action :let={{_id, revenue}}>
     <div class="sr-only">
       <.link navigate={~p"/revenues/#{revenue}"}>Show</.link>

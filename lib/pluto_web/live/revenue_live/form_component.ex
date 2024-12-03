@@ -2,14 +2,13 @@ defmodule PlutoWeb.RevenueLive.FormComponent do
   use PlutoWeb, :live_component
 
   alias Pluto.Timeline
-
   @impl true
   def render(assigns) do
     ~H"""
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage revenue records in your database.</:subtitle>
+        <:subtitle>Use este formulário para gerenciar os registros de receita em seu banco de dados.</:subtitle>
       </.header>
 
       <.simple_form
@@ -22,6 +21,7 @@ defmodule PlutoWeb.RevenueLive.FormComponent do
         <.input field={@form[:title]} type="text" label="Title" />
         <.input field={@form[:description]} type="text" label="Description" />
         <.input field={@form[:price]} type="number" label="Price" />
+        <.input field={@form[:date_added]} type="date" label="Date Added" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Revenue</.button>
         </:actions>
@@ -29,6 +29,7 @@ defmodule PlutoWeb.RevenueLive.FormComponent do
     </div>
     """
   end
+
 
   @impl true
   def update(%{revenue: revenue} = assigns, socket) do
