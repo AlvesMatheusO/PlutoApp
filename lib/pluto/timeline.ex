@@ -7,8 +7,6 @@ defmodule Pluto.Timeline do
   alias Pluto.Repo
   alias Pluto.Timeline.{Revenue, Expense}
 
-
-
   @doc """
   Returns the list of revenues.
 
@@ -59,6 +57,37 @@ defmodule Pluto.Timeline do
 
   """
   def get_revenue!(id), do: Repo.get!(Revenue, id)
+
+  def get_total_revenues do
+    Repo.aggregate(from(r in Revenue), :sum, :price) || 0
+  end
+
+  def get_total_expenses do
+    Repo.aggregate(from(e in Expense), :sum, :price) || 0
+  end
+
+  def get_revenues_by_month do
+    query =
+      from r in Revenue,
+        select: {fragment("DATE_PART('month', ?)", r.date_added), sum(r.price)},
+        group_by: fragment("DATE_PART('month', ?)", r.date_added)
+
+    Repo.all(query)
+    |> Enum.into(%{}, fn {month, total} -> {month, total} end)
+  end
+
+  @doc """
+  Obtém o total de despesas agrupadas por mês.
+  """
+  def get_expenses_by_month do
+    query =
+      from e in Expense,
+        select: {fragment("DATE_PART('month', ?)", e.date_added), sum(e.price)},
+        group_by: fragment("DATE_PART('month', ?)", e.date_added)
+
+    Repo.all(query)
+    |> Enum.into(%{}, fn {month, total} -> {month, total} end)
+  end
 
   @doc """
   Creates a revenue.

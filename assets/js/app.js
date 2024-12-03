@@ -1,19 +1,3 @@
-// If you want to use Phoenix channels, run `mix help phx.gen.channel`
-// to get started and then uncomment the line below.
-// import "./user_socket.js"
-
-// You can include dependencies in two ways.
-//
-// The simplest option is to put them in assets/vendor and
-// import them using relative paths:
-//
-//     import "../vendor/some-package.js"
-//
-// Alternatively, you can `npm install some-package --prefix assets` and import
-// them using a path starting with the package name:
-//
-//     import "some-package"
-
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"
 // Establish Phoenix Socket and LiveView configuration.
@@ -27,57 +11,7 @@ let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("
 // Definindo os hooks
 let Hooks = {};
 
-// Hook para o gráfico de receitas
-Hooks.RevenueChartHook = {
-  mounted() {
-    // Obtendo o valor do número de receitas por mês a partir do atributo `data-revenues-by-month`
-    const revenuesByMonth = JSON.parse(this.el.dataset.revenuesByMonth);
-
-    // Converter os números dos meses para os nomes dos meses
-    const monthNames = [
-      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-    ];
-
-    const labels = Object.keys(revenuesByMonth).map(month => monthNames[month - 1]);
-    const data = Object.values(revenuesByMonth);
-
-    // Criando o gráfico de receitas por mês
-    var ctx = document.getElementById('revenuesChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Total de Receitas por Mês',
-          data: data,
-          fill: false,
-          borderColor: 'rgba(54, 162, 235, 1)',
-          tension: 0.1
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: 'Meses'
-            }
-          },
-          y: {
-            title: {
-              display: true,
-              text: 'Total de Receitas'
-            },
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  }
-};
-
+// Hook para o gráfico de receitas e despesas por mês (gráfico de linha)
 Hooks.ExpenseChartHook = {
   mounted() {
     // Obtendo o valor do número de receitas e despesas por mês
@@ -94,7 +28,7 @@ Hooks.ExpenseChartHook = {
     const expensesData = Object.values(expensesByMonth);
 
     // Criando o gráfico de receitas e despesas por mês
-    var ctx = document.getElementById('chart').getContext('2d');
+    var ctx = document.getElementById('monthlyRevenueExpenseChart').getContext('2d');
     new Chart(ctx, {
       type: 'line',
       data: {
@@ -118,6 +52,7 @@ Hooks.ExpenseChartHook = {
       },
       options: {
         responsive: true,
+        maintainAspectRatio: true,
         scales: {
           x: {
             title: {
@@ -138,7 +73,53 @@ Hooks.ExpenseChartHook = {
   }
 };
 
+// Hook para o gráfico de pizza de receitas e despesas
+Hooks.RevenueExpensePieChartHook = {
+  mounted() {
+    // Obtendo os valores de receitas e despesas do elemento HTML
+    const totalRevenues = parseFloat(this.el.dataset.totalRevenues);
+    const totalExpenses = parseFloat(this.el.dataset.totalExpenses);
 
+    // Criando o gráfico de pizza
+    var ctx = document.getElementById('revenueExpensePieChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Receitas', 'Despesas'],
+        datasets: [{
+          label: 'Distribuição de Receitas e Despesas',
+          data: [totalRevenues, totalExpenses],
+          backgroundColor: [
+            'rgba(54, 162, 235, 0.6)',  // Cor para Receitas
+            'rgba(255, 99, 132, 0.6)'    // Cor para Despesas
+          ],
+          borderColor: [
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 99, 132, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            position: 'top'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let value = context.raw;
+                return `${context.label}: ${value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+};
 
 // Criando a instância do LiveSocket e adicionando os hooks
 let liveSocket = new LiveSocket("/live", Socket, {
