@@ -5,9 +5,11 @@ defmodule PlutoWeb.DashboardLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    # Obtendo o valor total de receitas por mês
+    # Obtendo os valores de receitas e despesas por mês
     revenues_by_month = Timeline.count_revenues_by_month()
-    {:ok, assign(socket, revenues_by_month: revenues_by_month)}
+    expenses_by_month = Timeline.count_expenses_by_month()
+
+    {:ok, assign(socket, revenues_by_month: revenues_by_month, expenses_by_month: expenses_by_month)}
   end
 
   @impl true
@@ -34,11 +36,12 @@ defmodule PlutoWeb.DashboardLive do
       <div
         id="chart-container"
         class="chart-container w-full max-w-3xl mx-auto"
-        phx-hook="RevenueChartHook"
+        phx-hook="ExpenseChartHook"
         data-revenues-by-month={Jason.encode!(@revenues_by_month)}
+        data-expenses-by-month={Jason.encode!(@expenses_by_month)}
       >
-        <h2 class="text-2xl font-bold mb-4">Total de Receitas por Mês</h2>
-        <canvas id="revenuesChart"></canvas>
+        <h2 class="text-2xl font-bold mb-4">Total de Receitas e Despesas por Mês</h2>
+        <canvas id="chart"></canvas>
       </div>
     </div>
     """

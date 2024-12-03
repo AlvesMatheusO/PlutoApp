@@ -78,6 +78,67 @@ Hooks.RevenueChartHook = {
   }
 };
 
+Hooks.ExpenseChartHook = {
+  mounted() {
+    // Obtendo o valor do número de receitas e despesas por mês
+    const revenuesByMonth = JSON.parse(this.el.dataset.revenuesByMonth);
+    const expensesByMonth = JSON.parse(this.el.dataset.expensesByMonth);
+
+    const monthNames = [
+      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ];
+
+    const labels = Object.keys(revenuesByMonth).map(month => monthNames[month - 1]);
+    const revenuesData = Object.values(revenuesByMonth);
+    const expensesData = Object.values(expensesByMonth);
+
+    // Criando o gráfico de receitas e despesas por mês
+    var ctx = document.getElementById('chart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Total de Receitas por Mês',
+            data: revenuesData,
+            fill: false,
+            borderColor: 'rgba(54, 162, 235, 1)',
+            tension: 0.1
+          },
+          {
+            label: 'Total de Despesas por Mês',
+            data: expensesData,
+            fill: false,
+            borderColor: 'rgba(255, 99, 132, 1)',
+            tension: 0.1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Meses'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Valor Total'
+            },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+};
+
+
 
 // Criando a instância do LiveSocket e adicionando os hooks
 let liveSocket = new LiveSocket("/live", Socket, {

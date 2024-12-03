@@ -5,8 +5,9 @@ defmodule Pluto.Timeline do
 
   import Ecto.Query, warn: false
   alias Pluto.Repo
+  alias Pluto.Timeline.{Revenue, Expense}
 
-  alias Pluto.Timeline.Revenue
+
 
   @doc """
   Returns the list of revenues.
@@ -29,6 +30,15 @@ defmodule Pluto.Timeline do
     from(r in Revenue,
       select: {fragment("DATE_PART('month', ?)", r.date_added), sum(r.price)},
       group_by: fragment("DATE_PART('month', ?)", r.date_added)
+    )
+    |> Repo.all()
+    |> Enum.into(%{})
+  end
+
+  def count_expenses_by_month do
+    from(e in Expense,
+      select: {fragment("DATE_PART('month', ?)", e.date_added), sum(e.price)},
+      group_by: fragment("DATE_PART('month', ?)", e.date_added)
     )
     |> Repo.all()
     |> Enum.into(%{})

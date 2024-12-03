@@ -3,17 +3,17 @@ defmodule Pluto.Timeline.Expense do
   import Ecto.Changeset
 
   schema "expenses" do
-    field :description, :string
     field :title, :string
+    field :description, :string
     field :price, :integer
+    field :date_added, :date
 
-    timestamps(type: :utc_datetime)
+    timestamps()
   end
 
-  @doc false
   def changeset(expense, attrs) do
     expense
-    |> cast(attrs, [:title, :description, :price])
-    |> validate_required([:title, :description, :price])
+    |> cast(attrs, [:title, :description, :price, :date_added])
+    |> validate_required([:title, :description, :price, :date_added])
   end
 end

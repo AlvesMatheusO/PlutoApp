@@ -22,6 +22,7 @@ defmodule PlutoWeb.ExpenseLive.FormComponent do
         <.input field={@form[:title]} type="text" label="Title" />
         <.input field={@form[:description]} type="text" label="Description" />
         <.input field={@form[:price]} type="number" label="Price" />
+        <.input field={@form[:date_added]} type="date" label="Date Added" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Expense</.button>
         </:actions>
